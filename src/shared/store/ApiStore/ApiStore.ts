@@ -8,7 +8,7 @@ export default class ApiStore implements IApiStore {
 
     async request<SuccessT, ErrorT = any, ReqT = {}>(params: RequestParams<ReqT>): Promise<ApiResponse<SuccessT, ErrorT>> {
         try {
-            const url: string = `${this.baseUrl}/orgs/${params.endpoint}/repos`;
+            const url: string = `${this.baseUrl}${params.endpoint}`;
             let data: string | null = null;
             if (params.method === HTTPMethod.POST) {
                 data = JSON.stringify(params.data);
@@ -18,6 +18,7 @@ export default class ApiStore implements IApiStore {
                 headers: params.headers,
                 body: data,
             })
+            if(!response.ok) throw new Error(`${StatusHTTP.NOT_FOUND}`);
             const jsonResp = await response.json();
             return {
                 success: true,
@@ -25,7 +26,7 @@ export default class ApiStore implements IApiStore {
                 status: StatusHTTP.OK
             }
         } catch(e: any) {
-            if(e.status === StatusHTTP.NOT_FOUND) {
+            if(parseInt(e.message) === StatusHTTP.NOT_FOUND) {
                 return {
                     success: false,
                     data: e,

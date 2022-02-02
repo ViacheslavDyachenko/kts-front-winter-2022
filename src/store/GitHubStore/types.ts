@@ -12,6 +12,15 @@ export type GetOrganizationReposListParams = {
     organizationName: string,
 }
 
+export type CreateReposParams = {
+    organizationName: string,
+    name: string,
+    description?: string,
+    homepage?: string,
+    private?: boolean,
+
+}
+
 export type ApiResp<T> = 
     {
         success: boolean;
@@ -23,4 +32,5 @@ export type RepoItem = Record<string, string>;
 
 export interface IGitHubStore {
     getOrganizationReposList(params: GetOrganizationReposListParams): Promise<ApiResp<RepoItem[]>>;
+    createRepos(params: CreateReposParams): Promise<ApiResp<{}>>;
 }
