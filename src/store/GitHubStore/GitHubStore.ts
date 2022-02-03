@@ -1,5 +1,5 @@
-import ApiStore from '../../shared/store/ApiStore';
-import { HTTPMethod } from '../../shared/store/ApiStore/types';
+import ApiStore from '@shared/store/ApiStore';
+import { HTTPMethod } from '@shared/store/ApiStore/types';
 import {ApiResp, CreateReposParams, GetOrganizationReposListParams, IGitHubStore, RepoItem} from "./types";
 
 export default class GitHubStore implements IGitHubStore {
@@ -16,9 +16,15 @@ export default class GitHubStore implements IGitHubStore {
     async createRepos(params: CreateReposParams): Promise<ApiResp<{}>> {
         const clientID = 'ebac1c599a2b6c661bbb';
         const clientSecret = '84959d8866d4a5dadd51a26e7d3c0bb840cecfe9';
-
-        const codeParam = window.location.search.replace( '?code=', ''); 
-        
+        const authorize_uri = 'https://github.com/login/oauth/authorize';
+        const redirect_uri = 'http://localhost:3000';
+        let codeParam = window.location.search.replace( '?code=', ''); 
+        if(codeParam === '') {
+            window.location.href = `${authorize_uri}?client_id=${clientID}&redirect_uri=${redirect_uri}`;
+            codeParam = window.location.search.replace( '?code=', '');
+        }
+        // это не сработает так как отправлять ID и Secret клиента в браузерном приложении нельзя, произойдёт ошибка CORS policy.
+        // как реализовать получение access token на фронте не знаю, сломал голову, перепробовал много различных гайдов.
         const tokenResponse = await this._apiStoreAuth.request({
             method: HTTPMethod.POST,
             endpoint: '/login/oauth/access_token?' +
@@ -26,8 +32,10 @@ export default class GitHubStore implements IGitHubStore {
                         `client_secret=${clientSecret}&` +
                         `code=${codeParam}`,
             headers: {
-                'Content-Type': 'application/json;charset=utf-8',
+                'accept': 'application/json',
+                'Content-Type': 'application/json',
             }});
+        
         const accessToken = tokenResponse.data.access_token;
         
         const result = await this._apiStore.request({

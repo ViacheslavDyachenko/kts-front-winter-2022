@@ -6,7 +6,7 @@
  * Выберите любой запрос из публичного API GitHub.
  */
 
-import { StatusHTTP } from "../../shared/store/ApiStore/types";
+import { StatusHTTP } from "@shared/store/ApiStore/types";
 
 export type GetOrganizationReposListParams = {
     organizationName: string,
