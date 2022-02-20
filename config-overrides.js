@@ -4,7 +4,9 @@ module.exports = function override(config) {
   alias({
     '@root': 'src/root',
     '@store': 'src/store',
-    '@shared': 'src/shared'
+    '@shared': 'src/shared',
+    '@components': 'src/components',
+    '@pages': 'src/pages'
   })(config);
 
   return config;
