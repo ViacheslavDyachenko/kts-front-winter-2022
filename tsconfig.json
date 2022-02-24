@@ -2,9 +2,24 @@
   "compilerOptions": {
     "baseUrl": "src",
     "paths": {
-      "@root/*": ["./root/*"],
-      "@store/*": ["./store/*"],
-      "@shared/*": ["./shared/*"]
+      "@root/*": [
+        "./root/*"
+      ],
+      "@store/*": [
+        "./store/*"
+      ],
+      "@shared/*": [
+        "./shared/*"
+      ],
+      "@components/*": [
+        "./components/*"
+      ],
+      "@pages/*": [
+        "./pages/*"
+      ],
+      "@styles/*": [
+        "./styles/*"
+      ]
     },
     "target": "es5",
     "lib": [

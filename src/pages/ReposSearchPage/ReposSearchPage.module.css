@@ -1,0 +1,20 @@
+@import "@styles/variables.css";
+
+.search {
+    margin: 20px 20px;
+    font-size: 0;
+}
+.repositories {
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 16px;
+    margin: 0 0 0 20px;
+}
+.error {
+    font-family: Roboto, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    color: var(--red-color);
+    margin: -20px 20px 0;
+}

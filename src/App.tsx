@@ -1,28 +1,10 @@
-import logo from './logo.svg';
-import './App.css';
-import "@root/root";
+import ReposSearchPage from "@pages/ReposSearchPage";
 
-let val: string = 'Привет';
+import "@styles/style.css";
+import "antd/dist/antd.css";
 
 function App() {
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://ru.reactjs.org/"
-          rel="noopener noreferrer"
-        >
-          {val}
-        </a>
-      </header>
-    </div>
-  );
+  return <ReposSearchPage />;
 }
 
 export default App;
