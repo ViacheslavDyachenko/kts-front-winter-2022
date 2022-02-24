@@ -57,7 +57,7 @@ export default class GitHubStore implements IGitHubStore {
     };
   }
 
-  async GetBranchList(
+  async getBranchList(
     params: GetBranchListParams
   ): Promise<ApiResp<BranchesItem[]>> {
     let response = await this._apiStore.request<

@@ -1,6 +1,6 @@
-@import "../../styles/style.css";
+@import "@styles/variables.css";
 
-.search__input {
+.input {
     padding: 0;
     width: 295px;
     height: 50px;
@@ -15,7 +15,7 @@
     color: var(--plasesholder-color);
     text-indent: 12px;
 }
-.search__input:focus {
+.input:focus {
     border: 1px solid var(--red-color);
     outline: 0;
     color: var(--text-color);
@@ -25,7 +25,7 @@
     font-size: 14px;
     line-height: 16px;
 }
-.search__input:disabled {
+.input:disabled {
     background-color: var(--disabled-input-bgc);
     color: var(--placeholder-color);
 }

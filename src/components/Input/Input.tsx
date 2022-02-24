@@ -2,25 +2,25 @@ import React from "react";
 
 import style from "./Input.module.css";
 
-type inputProps = {
+type InputProps = {
   value: string;
   placeholder: string;
-  onChange: (event: React.FormEvent) => void;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const Input: React.FC<inputProps> = ({
+const Input: React.FC<InputProps> = ({
   value,
   placeholder,
   onChange,
-}: inputProps) => {
+}: InputProps) => {
   return (
     <input
-      className={style.search__input}
+      className={style.input}
       type="text"
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-    ></input>
+    />
   );
 };
 

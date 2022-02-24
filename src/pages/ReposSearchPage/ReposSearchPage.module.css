@@ -1,4 +1,4 @@
-@import "../../styles/style.css";
+@import "@styles/variables.css";
 
 .search {
     margin: 20px 20px;

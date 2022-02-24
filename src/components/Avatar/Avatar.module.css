@@ -1,6 +1,6 @@
-@import "../../styles/style.css";
+@import "@styles/variables.css";
 
-.repositoty__avatar {
+.avatar {
     display: inline-block;
     width: 80px;
     height: 80px;

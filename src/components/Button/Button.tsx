@@ -2,19 +2,19 @@ import React from "react";
 
 import style from "./Button.module.css";
 
-type buttonProps = {
+type ButtonProps = {
   children: React.ReactNode;
   onClick: (event: React.MouseEvent) => void;
   disabled: boolean;
 };
 
-const Button: React.FC<buttonProps> = ({
+const Button: React.FC<ButtonProps> = ({
   children,
   onClick,
   disabled,
-}: buttonProps) => {
+}: ButtonProps) => {
   return (
-    <button className={style.search__btn} onClick={onClick} disabled={disabled}>
+    <button className={style.btn} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );

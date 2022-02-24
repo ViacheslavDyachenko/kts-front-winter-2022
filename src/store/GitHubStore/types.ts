@@ -54,5 +54,5 @@ export interface IGitHubStore {
     params: GetOrganizationReposListParams
   ): Promise<ApiResp<RepoItem[]>>;
   createRepos(params: CreateReposParams): Promise<ApiResp<{}>>;
-  GetBranchList(params: GetBranchListParams): Promise<ApiResp<BranchesItem[]>>;
+  getBranchList(params: GetBranchListParams): Promise<ApiResp<BranchesItem[]>>;
 }

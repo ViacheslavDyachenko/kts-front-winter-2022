@@ -5,7 +5,7 @@ import style from "./StarIcon.module.css";
 const StarIcon: React.FC = () => {
   return (
     <svg
-      className={style["repositoty__star-repository"]}
+      className={style.star}
       width="14"
       height="13"
       viewBox="0 0 14 13"

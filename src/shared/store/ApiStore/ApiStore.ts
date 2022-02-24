@@ -42,6 +42,12 @@ export default class ApiStore implements IApiStore {
           data: e,
           status: StatusHTTP.NOT_FOUND,
         };
+      } else if (parseInt(e.message) === StatusHTTP.FORBIDDEN) {
+        return {
+          success: false,
+          data: e,
+          status: StatusHTTP.FORBIDDEN,
+        };
       }
       return {
         success: false,

@@ -2,20 +2,17 @@ import React from "react";
 
 import style from "./Avatar.module.css";
 
-type avatarProps = {
+type AvatarProps = {
   src?: string;
+  alt: string;
   letter: string;
 };
 
-const Avatar: React.FC<avatarProps> = ({ src, letter }: avatarProps) => {
-  return (
-    <span>
-      {src ? (
-        <img className={style.repositoty__avatar} src={src} alt=""></img>
-      ) : (
-        <span className={style.repositoty__avatar}>{letter}</span>
-      )}
-    </span>
+const Avatar: React.FC<AvatarProps> = ({ src, letter }: AvatarProps) => {
+  return src ? (
+    <img className={style.avatar} src={src} alt=""></img>
+  ) : (
+    <span className={style.avatar}>{letter}</span>
   );
 };
 

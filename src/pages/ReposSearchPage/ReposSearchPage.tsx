@@ -18,33 +18,29 @@ const ReposSearchPage: React.FC = () => {
 
   const [value, setValue] = React.useState("");
   const [load, setLoad] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
   const [result, setResult] = React.useState<ApiResp<RepoItem[]> | null>(null);
   const [disabled, setDisabled] = React.useState(false);
   const [owner, setOwner] = React.useState("");
   const [repo, setRepo] = React.useState("");
   const [visible, setVisible] = React.useState(false);
+  const [gitHubStore] = React.useState(() => new GitHubStore());
 
-  const onChange = (event: React.FormEvent): void => {
-    let element = event.target as HTMLInputElement;
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    let element = event.target;
 
     setValue(element.value);
   };
 
-  const onChangeHandler = React.useCallback((event) => {
-    onChange(event);
-  }, []);
+  const onChangeHandler = React.useCallback(onChange, []);
 
   const onClick = (): void => {
     setLoad(true);
   };
 
-  const onClickHandler = React.useCallback(() => {
-    onClick();
-  }, []);
+  const onClickHandler = React.useCallback(onClick, []);
 
-  const showDrawer = (event: React.MouseEvent) => {
-    let elem = event.currentTarget as HTMLDivElement;
+  const showDrawer = (event: React.MouseEvent<HTMLDivElement>) => {
+    let elem = event.currentTarget;
     if (!result) return;
     for (let item of result?.data) {
       if (parseInt(elem.id) === parseInt(item.item.id)) {
@@ -60,18 +56,16 @@ const ReposSearchPage: React.FC = () => {
   };
 
   React.useEffect(() => {
-    const gitHubStore = new GitHubStore();
     if (!load) return;
     setDisabled(true);
     gitHubStore
       .getOrganizationReposList({ organizationName: value })
       .then((result) => {
         setResult(result);
-        setIsLoading(result.success);
         setDisabled(false);
         setLoad(false);
       });
-  }, [load, value]);
+  }, [gitHubStore, load, value]);
 
   return (
     <>
@@ -99,10 +93,9 @@ const ReposSearchPage: React.FC = () => {
         </h4>
       )}
       <div className={style.repositories}>
-        {isLoading &&
+        {!disabled &&
           result?.data.map((repo) => (
             <RepoTile
-              letter={repo.item.title.slice(0, 1)}
               src={repo.src}
               key={repo.item.id}
               item={repo.item}
