@@ -1,25 +1,23 @@
 import React from "react";
 
-import style from "./Input.module.css";
+import useReposListContext from "utils/useReposListContext";
+
+import style from "./Input.module.scss";
 
 type InputProps = {
   value: string;
   placeholder: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const Input: React.FC<InputProps> = ({
-  value,
-  placeholder,
-  onChange,
-}: InputProps) => {
+const Input: React.FC<InputProps> = ({ value, placeholder }: InputProps) => {
+  const { context } = useReposListContext();
   return (
     <input
       className={style.input}
       type="text"
       placeholder={placeholder}
       value={value}
-      onChange={onChange}
+      onChange={context.onChange}
     />
   );
 };

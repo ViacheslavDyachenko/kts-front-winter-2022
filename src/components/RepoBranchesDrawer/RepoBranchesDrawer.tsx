@@ -1,47 +1,58 @@
 import React from "react";
 
+import Loader from "@components/Loader";
 import GitHubStore from "@store/GitHubStore";
 import { BranchesItem } from "@store/GitHubStore/types";
 import { Drawer } from "antd";
+import { useParams } from "react-router-dom";
+import useReposListContext from "utils/useReposListContext";
 
 type RepoBranchesDrawerProps = {
   onClose: () => void;
   visible: true | false;
-  owner: string;
-  repo: string;
 };
 
 const RepoBranchesDrawer: React.FC<RepoBranchesDrawerProps> = ({
   onClose,
   visible,
-  repo,
-  owner,
 }: RepoBranchesDrawerProps) => {
   const [branches, setBranches] = React.useState<BranchesItem[] | null>(null);
   const [load, setLoad] = React.useState(false);
   const [gitHubStore] = React.useState(() => new GitHubStore());
-
-  if (!visible && load) setLoad(false);
+  const { company, title } = useParams();
+  const { context } = useReposListContext();
+  if (title && company) visible = true;
 
   React.useEffect(() => {
     if (!load) {
       gitHubStore
-        .getBranchList({ ownerName: owner, reposName: repo })
+        .getBranchList({
+          ownerName: company ? company : context.branchData.owner,
+          reposName: title ? title : context.branchData.repo,
+        })
         .then((result) => {
-          setBranches(result.data);
+          result.success
+            ? setBranches(result.data)
+            : setBranches([{ name: "что-то пошло не так", id: "1" }]);
           setLoad(true);
         });
     }
-  }, [load, owner, repo]);
-
+  }, [load, context.branchData.owner, context.branchData.repo]);
+  React.useEffect(() => {
+    if (!visible) setLoad(false);
+  });
   return (
     <Drawer
-      title={`список веток репозитория: ${repo}`}
+      title={`список веток репозитория: ${title}`}
       placement="right"
       onClose={onClose}
       visible={visible}
     >
-      {branches && branches.map((item) => <p key={item.id}>{item.name}</p>)}
+      {load ? (
+        branches && branches.map((item) => <p key={item.id}>{item.name}</p>)
+      ) : (
+        <Loader />
+      )}
     </Drawer>
   );
 };
