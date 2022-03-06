@@ -18,11 +18,12 @@ export default class GitHubStore implements IGitHubStore {
   // TODO: реализовать интерфейс IGitHubStore
 
   async getOrganizationReposList(
-    params: GetOrganizationReposListParams
+    params: GetOrganizationReposListParams,
+    page: number
   ): Promise<ApiResp<RepoItem[]>> {
     const response = await this._apiStore.request({
       method: HTTPMethod.GET,
-      endpoint: `/orgs/${params.organizationName}/repos`,
+      endpoint: `/orgs/${params.organizationName}/repos?per_page=10&page=${page}`,
     });
     try {
       response.data = await response.data.map((item: any) => {
@@ -67,10 +68,18 @@ export default class GitHubStore implements IGitHubStore {
       endpoint: `/repos/${params.ownerName}/${params.reposName}/branches`,
       headers: {},
     });
-    response.data = await response.data.map((item: any) => ({
-      id: item.commit.sha,
-      name: item.name,
-    }));
+    try {
+      response.data = await response.data.map((item: any) => ({
+        id: item.commit.sha,
+        name: item.name,
+      }));
+    } catch (e) {
+      return {
+        success: response.success,
+        data: response.data,
+        status: response.status,
+      };
+    }
     return {
       success: response.success,
       data: response.data,

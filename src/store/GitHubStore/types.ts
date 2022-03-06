@@ -51,7 +51,8 @@ export type BranchesItem = {
 
 export interface IGitHubStore {
   getOrganizationReposList(
-    params: GetOrganizationReposListParams
+    params: GetOrganizationReposListParams,
+    page: number
   ): Promise<ApiResp<RepoItem[]>>;
   createRepos(params: CreateReposParams): Promise<ApiResp<{}>>;
   getBranchList(params: GetBranchListParams): Promise<ApiResp<BranchesItem[]>>;

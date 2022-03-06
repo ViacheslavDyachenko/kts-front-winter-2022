@@ -1,6 +1,8 @@
 import React from "react";
 
-import style from "./Input.module.css";
+import useReposListContext from "utils/useReposListContext";
+
+import style from "./Input.module.scss";
 
 type InputProps = {
   value: string;

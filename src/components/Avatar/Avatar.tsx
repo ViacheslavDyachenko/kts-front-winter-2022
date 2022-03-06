@@ -1,6 +1,6 @@
 import React from "react";
 
-import style from "./Avatar.module.css";
+import style from "./Avatar.module.scss";
 
 type AvatarProps = {
   src?: string;
