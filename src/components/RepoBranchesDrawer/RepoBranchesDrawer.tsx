@@ -1,11 +1,11 @@
 import React from "react";
 
 import Loader from "@components/Loader";
-import GitHubStore from "@store/GitHubStore";
-import { BranchesItem } from "@store/GitHubStore/types";
+import RepoBranchesStore from "@store/RepoBranchesStore";
 import { Drawer } from "antd";
+import { observer } from "mobx-react-lite";
 import { useParams } from "react-router-dom";
-import useReposListContext from "utils/useReposListContext";
+import useLocalStore from "utils/useLocalStore";
 
 type RepoBranchesDrawerProps = {
   onClose: () => void;
@@ -16,42 +16,40 @@ const RepoBranchesDrawer: React.FC<RepoBranchesDrawerProps> = ({
   onClose,
   visible,
 }: RepoBranchesDrawerProps) => {
-  const [branches, setBranches] = React.useState<BranchesItem[] | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isError, setIsError] = React.useState(false);
-  const [gitHubStore] = React.useState(() => new GitHubStore());
+  const getData = useLocalStore(() => new RepoBranchesStore());
   const { company, title } = useParams();
   if (title && company) visible = true;
 
   React.useEffect(() => {
-    if (!isLoading && company && title) {
-      gitHubStore
-        .getBranchList({
-          ownerName: company,
-          reposName: title,
-        })
-        .then((result) => {
-          result.success ? setBranches(result.data) : setIsError(true);
-          setIsLoading(true);
-        });
+    if (title && company) {
+      getData.company = company;
+      getData.title = title;
     }
-  }, [isLoading, company, title]);
-  React.useEffect(() => {
+    if (visible) {
+      getData.repoBranches();
+    }
     if (!visible) {
-      setIsLoading(false);
-      setIsError(false);
+      getData.isLoading = false;
+      getData.isError = false;
     }
   });
+
+  const onCloseHandler = () => {
+    onClose();
+    visible = false;
+  };
+
   return (
     <Drawer
       title={`список веток репозитория: ${title}`}
       placement="right"
-      onClose={onClose}
+      onClose={onCloseHandler}
       visible={visible}
     >
-      {isLoading ? (
-        !isError ? (
-          branches && branches.map((item) => <p key={item.id}>{item.name}</p>)
+      {getData.isLoading ? (
+        !getData.isError ? (
+          getData.branches &&
+          getData.branches.map((item) => <p key={item.id}>{item.name}</p>)
         ) : (
           <p>что-то пошло не так</p>
         )
@@ -62,4 +60,4 @@ const RepoBranchesDrawer: React.FC<RepoBranchesDrawerProps> = ({
   );
 };
 
-export default React.memo(RepoBranchesDrawer);
+export default React.memo(observer(RepoBranchesDrawer));
