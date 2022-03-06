@@ -17,29 +17,30 @@ const RepoBranchesDrawer: React.FC<RepoBranchesDrawerProps> = ({
   visible,
 }: RepoBranchesDrawerProps) => {
   const [branches, setBranches] = React.useState<BranchesItem[] | null>(null);
-  const [load, setLoad] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isError, setIsError] = React.useState(false);
   const [gitHubStore] = React.useState(() => new GitHubStore());
   const { company, title } = useParams();
-  const { context } = useReposListContext();
   if (title && company) visible = true;
 
   React.useEffect(() => {
-    if (!load) {
+    if (!isLoading && company && title) {
       gitHubStore
         .getBranchList({
-          ownerName: company ? company : context.branchData.owner,
-          reposName: title ? title : context.branchData.repo,
+          ownerName: company,
+          reposName: title,
         })
         .then((result) => {
-          result.success
-            ? setBranches(result.data)
-            : setBranches([{ name: "что-то пошло не так", id: "1" }]);
-          setLoad(true);
+          result.success ? setBranches(result.data) : setIsError(true);
+          setIsLoading(true);
         });
     }
-  }, [load, context.branchData.owner, context.branchData.repo]);
+  }, [isLoading, company, title]);
   React.useEffect(() => {
-    if (!visible) setLoad(false);
+    if (!visible) {
+      setIsLoading(false);
+      setIsError(false);
+    }
   });
   return (
     <Drawer
@@ -48,8 +49,12 @@ const RepoBranchesDrawer: React.FC<RepoBranchesDrawerProps> = ({
       onClose={onClose}
       visible={visible}
     >
-      {load ? (
-        branches && branches.map((item) => <p key={item.id}>{item.name}</p>)
+      {isLoading ? (
+        !isError ? (
+          branches && branches.map((item) => <p key={item.id}>{item.name}</p>)
+        ) : (
+          <p>что-то пошло не так</p>
+        )
       ) : (
         <Loader />
       )}

@@ -37,9 +37,9 @@ const RepoTile: React.FC<RepoTileProps> = ({
           <p className={style.repositoty__company}>{item.company}</p>
           <div className={style.repositoty__details}>
             <StarIcon />
-            <div className={style["repositoty__counter-star"]}>
+            <p className={style["repositoty__counter-star"]}>
               {item.counterStar}
-            </div>
+            </p>
             <p className={style["repositoty__last-update"]}>
               {item.lastUpdate}
             </p>

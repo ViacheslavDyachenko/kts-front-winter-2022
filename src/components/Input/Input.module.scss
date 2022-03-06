@@ -1,28 +1,16 @@
 @import "@styles/variables.scss";
 
 .input {
-    padding: 0;
-    width: 295px;
-    height: 50px;
+    @include square(295px, 50px);
     vertical-align: top;
     border: 1px solid $borderColor;
     border-radius: 6px;
-    font-family: Roboto, sans-serif;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
-    line-height: 16px;
     color: $plasesholderColor;
     text-indent: 12px;
     &:focus {
         border: 1px solid $redColor;
         outline: 0;
         color: $textColor;
-        font-family: Roboto, sans-serif;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 14px;
-        line-height: 16px;
         &:disabled {
             background-color: $disabledInputBgc;
             color: $plasesholderColor;

@@ -2,7 +2,6 @@
 
 .search {
     margin: 20px 20px;
-    font-size: 0;
 }
 .repositories {
     display: grid;
@@ -11,10 +10,6 @@
     margin: 0 0 0 20px;
 }
 .error {
-    font-family: Roboto, sans-serif;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
     color: $redColor;
     margin: -20px 20px 0;
 }

@@ -1,8 +1,7 @@
 @import "@styles/variables.scss";
 
 .repositoty {
-    width: 357px;
-    height: 104px;
+    @include square(357px, 104px);
     border: 1px solid $borderColor;
     border-radius: 6px;
     position: relative;
@@ -19,11 +18,8 @@
         transform: translateY(-50%);
     }
     &__title {
-        font-family: Roboto, sans-serif;
-        font-style: normal;
         font-weight: bold;
         font-size: 16px;
-        margin: 0;
         width: 240px;
         white-space: nowrap;
         overflow-x: hidden;
@@ -31,11 +27,6 @@
     &__company {
         display: inline-block;
         margin-top: 4px;
-        margin-bottom: 0;
-        font-family: Roboto, sans-serif;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 14px;
         color: $plasesholderColor;
         &:hover {
             color: $companyHover;
@@ -50,26 +41,17 @@
     }
     &__counter-star {
         margin-left: 17px;
-        font-family: Robot, sans-serif;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 14px;
         color: $plasesholderColor;
     }
     &__last-update {
         height: 16px;
         width: 200px;
-        margin: 0;
         margin-left: 20px;
-        font-family: Roboto;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 14px;
+        
         color: $plasesholderColor;
     }
 }
 .link {
-    text-decoration: none;
     color: $textColor;
     &:hover {
         color: $textColor;
