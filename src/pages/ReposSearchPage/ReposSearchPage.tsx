@@ -24,13 +24,19 @@ const ReposSearchPage: React.FC = () => {
 
   const { title } = useParams();
 
-  const onChangeHandler = React.useCallback(getData.onChange, []);
-
-  const onClickHandler = React.useCallback(getData.onClick, []);
+  const getReposNextPage = React.useCallback(async () => {
+    await getData.getReposFirstPage();
+    if (
+      (getData.result ? getData.result.data.length : 0) / 10 <
+      getData.page - 1
+    ) {
+      getData.hasMore = false;
+    }
+  }, [getData]);
 
   React.useEffect(() => {
     getData.repo = title !== undefined ? title : "";
-  }, []);
+  }, [getData, title]);
 
   return (
     <>
@@ -38,9 +44,9 @@ const ReposSearchPage: React.FC = () => {
         <Input
           value={getData.value}
           placeholder="Введите название организации"
-          onChange={onChangeHandler}
+          onChange={getData.onChange}
         />
-        <Button onClick={onClickHandler} disabled={getData.disabled}>
+        <Button onClick={getData.onClick} disabled={getData.load}>
           {searchIcon}
         </Button>
       </div>
@@ -60,21 +66,20 @@ const ReposSearchPage: React.FC = () => {
       {getData.result?.success && (
         <InfiniteScroll
           className={style.repositories}
-          next={getData.getReposNextPage}
+          next={getReposNextPage}
           hasMore={getData.hasMore}
           dataLength={getData.result ? getData.result.data.length : 0}
           scrollThreshold={1}
           loader={<Loader />}
         >
-          {getData.result?.success &&
-            getData.result?.data.map((repo) => (
-              <RepoTile
-                src={repo.src}
-                key={repo.item.id}
-                item={repo.item}
-                onClick={getData.showDrawer}
-              />
-            ))}
+          {getData.result?.data.map((repo) => (
+            <RepoTile
+              src={repo.src}
+              key={repo.item.id}
+              item={repo.item}
+              onClick={getData.showDrawer}
+            />
+          ))}
         </InfiniteScroll>
       )}
       {getData.repo && (

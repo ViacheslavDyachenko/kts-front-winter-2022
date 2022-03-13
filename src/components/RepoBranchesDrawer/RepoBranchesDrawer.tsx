@@ -18,15 +18,11 @@ const RepoBranchesDrawer: React.FC<RepoBranchesDrawerProps> = ({
 }: RepoBranchesDrawerProps) => {
   const getData = useLocalStore(() => new RepoBranchesStore());
   const { company, title } = useParams();
-  if (title && company) visible = true;
+  title && company ? (getData.visible = true) : (getData.visible = false);
 
   React.useEffect(() => {
-    if (title && company) {
-      getData.company = company;
-      getData.title = title;
-    }
     if (visible) {
-      getData.repoBranches();
+      getData.repoBranches(title, company);
     }
     if (!visible) {
       getData.isLoading = false;
@@ -44,7 +40,7 @@ const RepoBranchesDrawer: React.FC<RepoBranchesDrawerProps> = ({
       title={`список веток репозитория: ${title}`}
       placement="right"
       onClose={onCloseHandler}
-      visible={visible}
+      visible={getData.visible}
     >
       {getData.isLoading ? (
         !getData.isError ? (
@@ -60,4 +56,4 @@ const RepoBranchesDrawer: React.FC<RepoBranchesDrawerProps> = ({
   );
 };
 
-export default React.memo(observer(RepoBranchesDrawer));
+export default observer(RepoBranchesDrawer);

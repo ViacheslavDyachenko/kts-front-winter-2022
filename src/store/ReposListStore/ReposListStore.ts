@@ -8,7 +8,6 @@ type PrivateFileds =
   | "_value"
   | "_load"
   | "_result"
-  | "_disabled"
   | "_repo"
   | "_visible"
   | "_page"
@@ -22,8 +21,6 @@ export default class ReposListStore implements ILocalStore {
   private _load: boolean = false;
 
   private _result: ApiResp<RepoItemModel[]> | null = null;
-
-  private _disabled: boolean = false;
 
   private _repo: string = "";
 
@@ -43,10 +40,6 @@ export default class ReposListStore implements ILocalStore {
 
   get result() {
     return this._result;
-  }
-
-  get disabled() {
-    return this._disabled;
   }
 
   get repo() {
@@ -69,12 +62,15 @@ export default class ReposListStore implements ILocalStore {
     return this._hasMore;
   }
 
+  set hasMore(val) {
+    this._hasMore = val;
+  }
+
   constructor() {
     makeObservable<ReposListStore, PrivateFileds>(this, {
       _value: observable,
       _load: observable,
       _result: observable,
-      _disabled: observable,
       _repo: observable,
       _visible: observable,
       _page: observable,
@@ -84,12 +80,10 @@ export default class ReposListStore implements ILocalStore {
       onClose: action,
       showDrawer: action,
       getReposFirstPage: action,
-      getReposNextPage: action,
       destroy: action,
       value: computed,
       load: computed,
       result: computed,
-      disabled: computed,
       repo: computed,
       visible: computed,
       page: computed,
@@ -107,6 +101,7 @@ export default class ReposListStore implements ILocalStore {
     this._load = true;
     this._page = 1;
     this._hasMore = true;
+    this._result = null;
     this.getReposFirstPage();
   };
 
@@ -126,7 +121,6 @@ export default class ReposListStore implements ILocalStore {
   };
 
   getReposFirstPage = flow(function* (this: ReposListStore) {
-    this._disabled = true;
     const response = yield this._gitHubStore.getOrganizationReposList(
       { organizationName: this._value },
       this._page
@@ -138,23 +132,14 @@ export default class ReposListStore implements ILocalStore {
         : response.data,
       success: response.success,
     };
-    this._disabled = false;
     this._load = false;
     this._page++;
   });
-
-  getReposNextPage = async () => {
-    await this.getReposFirstPage();
-    if ((this._result ? this._result.data.length : 0) / 10 < this._page - 1) {
-      this._hasMore = false;
-    }
-  };
 
   destroy() {
     this._value = "";
     this._load = false;
     this._result = null;
-    this._disabled = false;
     this._repo = "";
     this._visible = false;
     this._page = 1;

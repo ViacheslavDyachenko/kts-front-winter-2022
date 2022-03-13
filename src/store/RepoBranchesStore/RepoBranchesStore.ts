@@ -3,12 +3,7 @@ import { BranchesItemModel } from "@store/Models/gitHub/BranchesItem";
 import { action, computed, flow, makeObservable, observable } from "mobx";
 import { ILocalStore } from "utils/useLocalStore/useLocalStore";
 
-type PrivateFileds =
-  | "_branches"
-  | "_isLoading"
-  | "_isError"
-  | "_company"
-  | "_title";
+type PrivateFileds = "_branches" | "_isLoading" | "_isError" | "_visible";
 
 export default class RepoBranchesStore implements ILocalStore {
   private readonly _gitHubStore = new GitHubStore();
@@ -19,24 +14,20 @@ export default class RepoBranchesStore implements ILocalStore {
 
   private _isError: boolean = false;
 
-  private _company: string = "";
-
-  private _title: string = "";
+  private _visible: boolean = false;
 
   constructor() {
     makeObservable<RepoBranchesStore, PrivateFileds>(this, {
       _isLoading: observable,
-      _branches: observable,
+      _branches: observable.ref,
       _isError: observable,
-      _company: observable,
-      _title: observable,
+      _visible: observable,
       repoBranches: action,
       destroy: action,
       isLoading: computed,
       branches: computed,
       isError: computed,
-      title: computed,
-      company: computed,
+      visible: computed,
     });
   }
 
@@ -51,22 +42,6 @@ export default class RepoBranchesStore implements ILocalStore {
     this._isLoading = prop;
   }
 
-  get company() {
-    return this._company;
-  }
-
-  set company(prop) {
-    this._company = prop;
-  }
-
-  get title() {
-    return this._title;
-  }
-
-  set title(prop) {
-    this._title = prop;
-  }
-
   get isError() {
     return this._isError;
   }
@@ -75,11 +50,23 @@ export default class RepoBranchesStore implements ILocalStore {
     this._isError = prop;
   }
 
-  repoBranches = flow(function* (this: RepoBranchesStore) {
-    if (!this._isLoading && this._company && this._title) {
+  get visible() {
+    return this._visible;
+  }
+
+  set visible(val) {
+    this._visible = val;
+  }
+
+  repoBranches = flow(function* (
+    this: RepoBranchesStore,
+    title: string | undefined,
+    company: string | undefined
+  ) {
+    if (!this._isLoading && company && title) {
       const result = yield this._gitHubStore.getBranchList({
-        ownerName: this._company,
-        reposName: this._title,
+        ownerName: company,
+        reposName: title,
       });
       result.success ? (this._branches = result.data) : (this._isError = true);
       this._isLoading = true;
