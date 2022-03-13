@@ -1,5 +1,15 @@
-import ApiStore from "@shared/store/ApiStore";
-import { ApiResponse, HTTPMethod } from "@shared/store/ApiStore/types";
+import {
+  BranchesItemApi,
+  BranchesItemModel,
+  normalizeBranchesItem,
+} from "@store/Models/gitHub/BranchesItem";
+import {
+  normalizeRepoItem,
+  RepoItemApi,
+  RepoItemModel,
+} from "@store/Models/gitHub/RepoItem";
+import ApiStore from "@store/RootStore/ApiStore";
+import { ApiResponse, HTTPMethod } from "@store/RootStore/ApiStore/types";
 
 import {
   ApiResp,
@@ -20,14 +30,16 @@ export default class GitHubStore implements IGitHubStore {
   async getOrganizationReposList(
     params: GetOrganizationReposListParams,
     page: number
-  ): Promise<ApiResp<RepoItem[]>> {
-    const response = await this._apiStore.request({
+  ): Promise<ApiResp<RepoItemModel[]>> {
+    const response = await this._apiStore.request<
+      ApiResponse<RepoItemApi, RepoItemApi>
+    >({
       method: HTTPMethod.GET,
       endpoint: `/orgs/${params.organizationName}/repos?per_page=10&page=${page}`,
     });
     try {
       response.data = await response.data.map((item: any) => {
-        return {
+        return normalizeRepoItem({
           src: item.owner.avatar_url,
           owner: item.owner.login,
           repo: item.name,
@@ -35,14 +47,14 @@ export default class GitHubStore implements IGitHubStore {
             id: item.id,
             title: item.name,
             company: item.owner.login,
-            counterStar: item.watchers,
-            lastUpdate:
+            counter_star: item.watchers,
+            last_update:
               "Updated " +
               new Date(item.updated_at).getDay() +
               " " +
               new Date(item.updated_at).toLocaleString("en", { month: "long" }),
           },
-        };
+        });
       });
     } catch (e) {
       return {
@@ -60,19 +72,21 @@ export default class GitHubStore implements IGitHubStore {
 
   async getBranchList(
     params: GetBranchListParams
-  ): Promise<ApiResp<BranchesItem[]>> {
+  ): Promise<ApiResp<BranchesItemModel[]>> {
     let response = await this._apiStore.request<
-      ApiResponse<BranchesItem, BranchesItem>
+      ApiResponse<BranchesItemApi, BranchesItemApi>
     >({
       method: HTTPMethod.GET,
       endpoint: `/repos/${params.ownerName}/${params.reposName}/branches`,
       headers: {},
     });
     try {
-      response.data = await response.data.map((item: any) => ({
-        id: item.commit.sha,
-        name: item.name,
-      }));
+      response.data = await response.data.map((item: any) => {
+        return normalizeBranchesItem({
+          id: item.commit.sha,
+          name: item.name,
+        });
+      });
     } catch (e) {
       return {
         success: response.success,
