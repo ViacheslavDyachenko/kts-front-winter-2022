@@ -15,8 +15,6 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   disabled,
 }: ButtonProps) => {
-  // eslint-disable-next-line
-  console.log('render');
   return (
     <Link to="/repos">
       <button className={style.btn} onClick={onClick} disabled={disabled}>
