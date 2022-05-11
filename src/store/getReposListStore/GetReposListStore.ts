@@ -16,7 +16,7 @@ type initialStateProps = {
 
 const initialState: initialStateProps = {
   value: "",
-  load: false,
+  load: true,
   result: null,
   disabled: false,
   owner: "",
@@ -30,30 +30,24 @@ const gitHubStore = new GitHubStore();
 
 export const getReposList = createAsyncThunk(
   "repos/getReposList",
-  async ({
-    value,
-    page,
-    load,
-  }: {
-    value: string;
-    page: number;
-    load: boolean;
-  }) => {
-    if (!load) return;
-    return await gitHubStore.getOrganizationReposList(
-      { organizationName: value },
-      page
+  async (params: { value: string; page: number; load: boolean }) => {
+    if (!params.load) return;
+    const response = await gitHubStore.getOrganizationReposList(
+      { organizationName: params.value },
+      params.page
     );
+    return response;
   }
 );
 
 export const getNextReposList = createAsyncThunk(
   "repos/getNextReposList",
   async ({ value, page }: { value: string; page: number }) => {
-    return await gitHubStore.getOrganizationReposList(
+    const response = await gitHubStore.getOrganizationReposList(
       { organizationName: value },
       page
     );
+    return response;
   }
 );
 
@@ -72,7 +66,7 @@ const getReposListStore = createSlice({
     showDrawerReduxHandler(state, action) {
       if (!state.result) return;
       for (let item of state.result?.data) {
-        if (parseInt(action.payload.elem.id) === parseInt(item.item.id)) {
+        if (parseInt(action.payload.id) === parseInt(item.item.id)) {
           state.owner = item.owner;
           state.repo = item.item.title;
         }
@@ -93,19 +87,21 @@ const getReposListStore = createSlice({
     builder
       .addCase(getReposList.pending, (state, action) => {
         state.disabled = true;
+        state.load = false;
       })
       .addCase(getReposList.fulfilled, (state, action) => {
         state.result = action.payload !== undefined ? action.payload : null;
         state.disabled = false;
-        state.load = false;
+        state.load = true;
         state.page += 1;
       })
       .addCase(getNextReposList.pending, (state, action) => {
         state.disabled = false;
+        state.load = false;
       })
       .addCase(getNextReposList.fulfilled, (state, action) => {
         state.disabled = false;
-        state.load = false;
+        state.load = true;
         if (action.payload === undefined) return;
         state.result = {
           status: action.payload.status,

@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
+import getBranchesListReducer from "@store/getBranchesListStore";
 import getReposListReducer from "@store/getReposListStore";
 
 const store = configureStore({
   reducer: {
-    counter: getReposListReducer,
+    repos: getReposListReducer,
+    branches: getBranchesListReducer,
   },
 });
 

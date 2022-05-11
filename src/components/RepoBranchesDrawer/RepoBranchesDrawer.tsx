@@ -1,11 +1,13 @@
 import React from "react";
 
 import Loader from "@components/Loader";
-import GitHubStore from "@store/GitHubStore";
-import { BranchesItem } from "@store/GitHubStore/types";
+import {
+  closeDrawer,
+  getBranchesList,
+} from "@store/getBranchesListStore/GetBranchesListStore";
 import { Drawer } from "antd";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import useReposListContext from "utils/useReposListContext";
 
 type RepoBranchesDrawerProps = {
   onClose: () => void;
@@ -16,32 +18,28 @@ const RepoBranchesDrawer: React.FC<RepoBranchesDrawerProps> = ({
   onClose,
   visible,
 }: RepoBranchesDrawerProps) => {
-  const [branches, setBranches] = React.useState<BranchesItem[] | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isError, setIsError] = React.useState(false);
-  const [gitHubStore] = React.useState(() => new GitHubStore());
+  const dispatch = useDispatch();
+
+  const isLoading = useSelector((state: any) => state.branches.isLoading);
+  const branches = useSelector((state: any) => state.branches.branches);
+  const isError = useSelector((state: any) => state.branches.isError);
+
   const { company, title } = useParams();
-  if (title && company) visible = true;
 
   React.useEffect(() => {
-    if (!isLoading && company && title) {
-      gitHubStore
-        .getBranchList({
-          ownerName: company,
-          reposName: title,
-        })
-        .then((result) => {
-          result.success ? setBranches(result.data) : setIsError(true);
-          setIsLoading(true);
-        });
-    }
+    if (title && company) visible = true;
+  }, [title, company]);
+
+  React.useEffect(() => {
+    dispatch(getBranchesList({ isLoading, company, title }));
   }, [isLoading, company, title]);
+
   React.useEffect(() => {
     if (!visible) {
-      setIsLoading(false);
-      setIsError(false);
+      dispatch(closeDrawer());
     }
-  });
+  }, [visible]);
+
   return (
     <Drawer
       title={`список веток репозитория: ${title}`}
@@ -51,7 +49,8 @@ const RepoBranchesDrawer: React.FC<RepoBranchesDrawerProps> = ({
     >
       {isLoading ? (
         !isError ? (
-          branches && branches.map((item) => <p key={item.id}>{item.name}</p>)
+          branches &&
+          branches.map((item: any) => <p key={item.id}>{item.name}</p>)
         ) : (
           <p>что-то пошло не так</p>
         )
