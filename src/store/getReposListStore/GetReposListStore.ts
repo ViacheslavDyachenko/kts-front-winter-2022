@@ -5,7 +5,7 @@ import { ApiResp, RepoItem } from "@store/GitHubStore/types";
 type initialStateProps = {
   value: string;
   load: boolean;
-  result: ApiResp<RepoItem[]> | null;
+  result: ApiResp<RepoItem> | null;
   disabled: boolean;
   owner: string;
   repo: string;
@@ -22,7 +22,7 @@ const initialState: initialStateProps = {
   owner: "",
   repo: "",
   visible: false,
-  page: 1,
+  page: 20,
   hasMore: true,
 };
 
@@ -65,10 +65,11 @@ const getReposListStore = createSlice({
     },
     showDrawerReduxHandler(state, action) {
       if (!state.result) return;
-      for (let item of state.result?.data) {
-        if (parseInt(action.payload.id) === parseInt(item.item.id)) {
-          state.owner = item.owner;
-          state.repo = item.item.title;
+      for (let item of state.result?.data.data.organization.repositories
+        .nodes) {
+        if (parseInt(action.payload.id) === item.databaseId) {
+          state.owner = item.owner.login;
+          state.repo = item.name;
         }
       }
       state.visible = true;
@@ -93,7 +94,7 @@ const getReposListStore = createSlice({
         state.result = action.payload !== undefined ? action.payload : null;
         state.disabled = false;
         state.load = true;
-        state.page += 1;
+        state.page += 20;
       })
       .addCase(getNextReposList.pending, (state, action) => {
         state.disabled = false;
@@ -105,14 +106,29 @@ const getReposListStore = createSlice({
         if (action.payload === undefined) return;
         state.result = {
           status: action.payload.status,
-          data: state.result
-            ? state.result.data.concat(action.payload.data)
+          data: state.result?.data
+            ? {
+                data: {
+                  organization: {
+                    repositories: {
+                      nodes:
+                        state.result?.data.data.organization.repositories.nodes.concat(
+                          action.payload.data.data.organization.repositories
+                            .nodes
+                        ),
+                    },
+                  },
+                },
+              }
             : action.payload.data,
           success: action.payload.success,
         };
-        state.page += 1;
+        state.page += 20;
         if (
-          (state.result ? state.result.data.length : 0) / 10 <
+          (state.result
+            ? state.result.data.data.organization.repositories.nodes.length
+            : 0) /
+            10 <
           state.page - 1
         ) {
           state.hasMore = false;

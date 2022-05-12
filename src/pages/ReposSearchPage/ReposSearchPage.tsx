@@ -54,7 +54,7 @@ const ReposSearchPage: React.FC = () => {
   );
 
   const onClickHandler = React.useCallback((): void => {
-    dispatch(onClickReduxHandler({ load: true, page: 1, hasMore: true }));
+    dispatch(onClickReduxHandler({ load: true, page: 20, hasMore: true }));
     dispatch(getReposList({ value, page, load }));
   }, [value, load]);
 
@@ -116,14 +116,30 @@ const ReposSearchPage: React.FC = () => {
           loader={<Loader />}
         >
           {success &&
-            result?.data.map((repo: any) => (
-              <RepoTile
-                src={repo.src}
-                key={repo.item.id}
-                item={repo.item}
-                onClick={showDrawer}
-              />
-            ))}
+            result?.data.data.organization.repositories.nodes.map(
+              (repo: any, index: number) => {
+                return (
+                  <RepoTile
+                    src={repo.owner.avatarUrl}
+                    key={repo.databaseId}
+                    item={{
+                      id: repo.databaseId,
+                      title: repo.name,
+                      company: repo.owner.login,
+                      counterStar: repo.watchers.totalCount,
+                      lastUpdate:
+                        "Updated " +
+                        new Date(repo.updatedAt).getDay() +
+                        " " +
+                        new Date(repo.updatedAt).toLocaleString("en", {
+                          month: "long",
+                        }),
+                    }}
+                    onClick={showDrawer}
+                  />
+                );
+              }
+            )}
         </InfiniteScroll>
       )}
       {visible && (

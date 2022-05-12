@@ -20,42 +20,47 @@ export default class GitHubStore implements IGitHubStore {
   async getOrganizationReposList(
     params: GetOrganizationReposListParams,
     page: number
-  ): Promise<ApiResp<RepoItem[]>> {
-    const response = await this._apiStore.request({
-      method: HTTPMethod.GET,
-      endpoint: `/orgs/${params.organizationName}/repos?per_page=10&page=${page}`,
-    });
+  ): Promise<ApiResp<RepoItem> | undefined> {
     try {
-      response.data = await response.data.map((item: any) => {
-        return {
-          src: item.owner.avatar_url,
-          owner: item.owner.login,
-          repo: item.name,
-          item: {
-            id: item.id,
-            title: item.name,
-            company: item.owner.login,
-            counterStar: item.watchers,
-            lastUpdate:
-              "Updated " +
-              new Date(item.updated_at).getDay() +
-              " " +
-              new Date(item.updated_at).toLocaleString("en", { month: "long" }),
-          },
-        };
+      const response = await this._apiStore.request({
+        method: HTTPMethod.POST,
+        endpoint: `/graphql`,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: "bearer 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",
+        },
+        data: {
+          query: `query nextPage($page: Int) {
+            organization(login: "ktsstudio") {
+              repositories(first: $page) {
+                nodes {
+                  databaseId
+                  owner {
+                    avatarUrl(size: 80)
+                    login
+                  }
+                  name
+                  watchers {
+                    totalCount
+                  }
+                  updatedAt
+                }
+              }
+            },
+          },`,
+          variables: { page },
+        },
       });
-    } catch (e) {
       return {
         success: response.success,
         data: response.data,
         status: response.status,
       };
+    } catch (e) {
+      //eslint-disable-next-line
+      console.log(e);
     }
-    return {
-      success: response.success,
-      data: response.data,
-      status: response.status,
-    };
   }
 
   async getBranchList(

@@ -27,15 +27,23 @@ export type ApiResp<T> = {
 };
 
 export type RepoItem = {
-  src: string;
-  owner: string;
-  repo: string;
-  item: {
-    id: string;
-    title: string;
-    company: string;
-    counterStar: number;
-    lastUpdate: string;
+  data: {
+    organization: {
+      repositories: {
+        nodes: {
+          databaseId: number;
+          name: string;
+          owner: {
+            avatarUrl: string;
+            login: string;
+          };
+          updatedAt: string;
+          watchers: {
+            totalCount: 3;
+          };
+        }[];
+      };
+    };
   };
 };
 
@@ -53,7 +61,7 @@ export interface IGitHubStore {
   getOrganizationReposList(
     params: GetOrganizationReposListParams,
     page: number
-  ): Promise<ApiResp<RepoItem[]>>;
+  ): Promise<ApiResp<RepoItem> | undefined>;
   createRepos(params: CreateReposParams): Promise<ApiResp<{}>>;
   getBranchList(params: GetBranchListParams): Promise<ApiResp<BranchesItem[]>>;
 }
