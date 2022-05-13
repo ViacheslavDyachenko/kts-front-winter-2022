@@ -31,6 +31,13 @@ export type RepoItem = {
     organization: {
       repositories: {
         nodes: {
+          commitComments: {
+            nodes: {
+              commit: {
+                message: string;
+              };
+            }[];
+          };
           databaseId: number;
           name: string;
           owner: {
@@ -38,10 +45,12 @@ export type RepoItem = {
             login: string;
           };
           updatedAt: string;
-          watchers: {
-            totalCount: 3;
-          };
+          stargazerCount: number;
         }[];
+        pageInfo: {
+          endCursor: string;
+          hasNextPage: boolean;
+        };
       };
     };
   };
@@ -60,7 +69,7 @@ export type BranchesItem = {
 export interface IGitHubStore {
   getOrganizationReposList(
     params: GetOrganizationReposListParams,
-    page: number
+    endCursor: string | undefined
   ): Promise<ApiResp<RepoItem> | undefined>;
   createRepos(params: CreateReposParams): Promise<ApiResp<{}>>;
   getBranchList(params: GetBranchListParams): Promise<ApiResp<BranchesItem[]>>;

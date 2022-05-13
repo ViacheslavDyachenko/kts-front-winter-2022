@@ -10,31 +10,37 @@ type initialStateProps = {
   owner: string;
   repo: string;
   visible: boolean;
-  page: number;
-  hasMore: boolean;
+  hasMore: boolean | undefined;
+  endCursor: string | undefined;
+  branchesList: string[][] | undefined;
 };
 
 const initialState: initialStateProps = {
   value: "",
-  load: true,
+  load: false,
   result: null,
   disabled: false,
   owner: "",
   repo: "",
   visible: false,
-  page: 20,
   hasMore: true,
+  endCursor: undefined,
+  branchesList: undefined,
 };
 
 const gitHubStore = new GitHubStore();
 
 export const getReposList = createAsyncThunk(
   "repos/getReposList",
-  async (params: { value: string; page: number; load: boolean }) => {
+  async (params: {
+    value: string;
+    load: boolean;
+    endCursor: string | undefined;
+  }) => {
     if (!params.load) return;
     const response = await gitHubStore.getOrganizationReposList(
       { organizationName: params.value },
-      params.page
+      params.endCursor
     );
     return response;
   }
@@ -42,10 +48,17 @@ export const getReposList = createAsyncThunk(
 
 export const getNextReposList = createAsyncThunk(
   "repos/getNextReposList",
-  async ({ value, page }: { value: string; page: number }) => {
+  async ({
+    value,
+    endCursor,
+  }: {
+    value: string;
+    page: number;
+    endCursor: string | undefined;
+  }) => {
     const response = await gitHubStore.getOrganizationReposList(
       { organizationName: value },
-      page
+      endCursor
     );
     return response;
   }
@@ -60,8 +73,9 @@ const getReposListStore = createSlice({
     },
     onClickReduxHandler(state, action) {
       state.load = action.payload.load;
-      state.page = action.payload.page;
       state.hasMore = action.payload.hasMore;
+      state.result = null;
+      state.endCursor = undefined;
     },
     showDrawerReduxHandler(state, action) {
       if (!state.result) return;
@@ -88,21 +102,36 @@ const getReposListStore = createSlice({
     builder
       .addCase(getReposList.pending, (state, action) => {
         state.disabled = true;
-        state.load = false;
       })
       .addCase(getReposList.fulfilled, (state, action) => {
         state.result = action.payload !== undefined ? action.payload : null;
         state.disabled = false;
-        state.load = true;
-        state.page += 20;
+        state.load = false;
+        action.payload?.data.data.organization !== null
+          ? (state.endCursor =
+              action.payload?.data.data.organization.repositories.pageInfo.endCursor)
+          : (state.endCursor = undefined);
+        action.payload?.data.data.organization !== null
+          ? (state.hasMore =
+              action.payload?.data.data.organization.repositories.pageInfo.hasNextPage)
+          : (state.hasMore = undefined);
+        action.payload?.data.data.organization !== null
+          ? (state.branchesList =
+              action.payload?.data.data.organization.repositories.nodes.map(
+                (item) => {
+                  return item.commitComments.nodes.map((childItem) => {
+                    return childItem.commit.message;
+                  });
+                }
+              ))
+          : (state.branchesList = undefined);
       })
       .addCase(getNextReposList.pending, (state, action) => {
         state.disabled = false;
-        state.load = false;
       })
       .addCase(getNextReposList.fulfilled, (state, action) => {
         state.disabled = false;
-        state.load = true;
+        state.load = false;
         if (action.payload === undefined) return;
         state.result = {
           status: action.payload.status,
@@ -116,6 +145,9 @@ const getReposListStore = createSlice({
                           action.payload.data.data.organization.repositories
                             .nodes
                         ),
+                      pageInfo:
+                        state.result.data.data.organization.repositories
+                          .pageInfo,
                     },
                   },
                 },
@@ -123,16 +155,18 @@ const getReposListStore = createSlice({
             : action.payload.data,
           success: action.payload.success,
         };
-        state.page += 20;
-        if (
-          (state.result
-            ? state.result.data.data.organization.repositories.nodes.length
-            : 0) /
-            10 <
-          state.page - 1
-        ) {
-          state.hasMore = false;
-        }
+        state.endCursor =
+          action.payload?.data.data.organization.repositories.pageInfo.endCursor;
+        state.hasMore =
+          action.payload?.data.data.organization.repositories.pageInfo.hasNextPage;
+        state.branchesList =
+          action.payload?.data.data.organization.repositories.nodes.map(
+            (item) => {
+              return item.commitComments.nodes.map((childItem) => {
+                return childItem.commit.message;
+              });
+            }
+          );
       });
   },
 });

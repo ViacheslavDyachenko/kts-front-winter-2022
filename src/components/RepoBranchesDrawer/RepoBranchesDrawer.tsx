@@ -1,10 +1,5 @@
 import React from "react";
 
-import Loader from "@components/Loader";
-import {
-  closeDrawer,
-  getBranchesList,
-} from "@store/getBranchesListStore/GetBranchesListStore";
 import { Drawer } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -12,33 +7,31 @@ import { useParams } from "react-router-dom";
 type RepoBranchesDrawerProps = {
   onClose: () => void;
   visible: true | false;
+  branchesList: string[][];
 };
 
 const RepoBranchesDrawer: React.FC<RepoBranchesDrawerProps> = ({
   onClose,
   visible,
+  branchesList,
 }: RepoBranchesDrawerProps) => {
   const dispatch = useDispatch();
 
-  const isLoading = useSelector((state: any) => state.branches.isLoading);
-  const branches = useSelector((state: any) => state.branches.branches);
-  const isError = useSelector((state: any) => state.branches.isError);
-
   const { company, title } = useParams();
+
+  const result = useSelector((state: any) => state.repos.result);
+
+  const [branches, setBranches] = React.useState(
+    result.data.data.organization.repositories.nodes
+      .find((item: any) => item.name === title)
+      .commitComments.nodes.map((item: any) => item.commit.message)
+  );
 
   React.useEffect(() => {
     if (title && company) visible = true;
+    //eslint-disable-next-line
+    console.log(visible);
   }, [title, company]);
-
-  React.useEffect(() => {
-    dispatch(getBranchesList({ isLoading, company, title }));
-  }, [isLoading, company, title]);
-
-  React.useEffect(() => {
-    if (!visible) {
-      dispatch(closeDrawer());
-    }
-  }, [visible]);
 
   return (
     <Drawer
@@ -47,16 +40,8 @@ const RepoBranchesDrawer: React.FC<RepoBranchesDrawerProps> = ({
       onClose={onClose}
       visible={visible}
     >
-      {isLoading ? (
-        !isError ? (
-          branches &&
-          branches.map((item: any) => <p key={item.id}>{item.name}</p>)
-        ) : (
-          <p>что-то пошло не так</p>
-        )
-      ) : (
-        <Loader />
-      )}
+      {branches &&
+        branches.map((item: any, index: number) => <p key={index}>{item}</p>)}
     </Drawer>
   );
 };

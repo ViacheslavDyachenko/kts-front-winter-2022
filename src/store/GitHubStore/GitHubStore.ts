@@ -19,7 +19,7 @@ export default class GitHubStore implements IGitHubStore {
 
   async getOrganizationReposList(
     params: GetOrganizationReposListParams,
-    page: number
+    endCursor: string | undefined
   ): Promise<ApiResp<RepoItem> | undefined> {
     try {
       const response = await this._apiStore.request({
@@ -31,25 +31,34 @@ export default class GitHubStore implements IGitHubStore {
           Authorization: "bearer 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",
         },
         data: {
-          query: `query nextPage($page: Int) {
-            organization(login: "ktsstudio") {
-              repositories(first: $page) {
+          query: `query nextPage($company: String!, $endCursor: String) {
+            organization(login: $company) {
+              repositories(first: 20, after: $endCursor) {
                 nodes {
+                  commitComments(first: 10) {
+                    nodes {
+                      commit {
+                        message
+                      }
+                    }
+                  }
                   databaseId
                   owner {
                     avatarUrl(size: 80)
                     login
                   }
                   name
-                  watchers {
-                    totalCount
-                  }
+                  stargazerCount
                   updatedAt
+                },
+                pageInfo {
+                  endCursor
+                  hasNextPage
                 }
               }
             },
           },`,
-          variables: { page },
+          variables: { company: params.organizationName, endCursor },
         },
       });
       return {

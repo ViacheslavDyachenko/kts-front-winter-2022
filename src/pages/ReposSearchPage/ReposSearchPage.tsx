@@ -35,6 +35,8 @@ const ReposSearchPage: React.FC = () => {
   const statePage = useSelector((state: any) => state.repos.page);
   const stateLoad = useSelector((state: any) => state.repos.load);
   const hasMore = useSelector((state: any) => state.repos.hasMore);
+  const endCursor = useSelector((state: any) => state.repos.endCursor);
+  const branchesList = useSelector((state: any) => state.repos.branchesList);
   const result = useSelector((state: any) => state.repos.result);
   const success = useSelector((state: any) => state.repos.result)?.success;
   const visible = useSelector((state: any) => state.repos.visible);
@@ -55,7 +57,6 @@ const ReposSearchPage: React.FC = () => {
 
   const onClickHandler = React.useCallback((): void => {
     dispatch(onClickReduxHandler({ load: true, page: 20, hasMore: true }));
-    dispatch(getReposList({ value, page, load }));
   }, [value, load]);
 
   const showDrawer = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -68,6 +69,11 @@ const ReposSearchPage: React.FC = () => {
   };
 
   React.useEffect(() => {
+    if (!load && page !== 20) return;
+    dispatch(getReposList({ value, load, endCursor }));
+  }, [load]);
+
+  React.useEffect(() => {
     dispatch(getParamsReduxHandler({ title: title, company: company }));
   }, []);
 
@@ -78,7 +84,7 @@ const ReposSearchPage: React.FC = () => {
   });
 
   const fetchData = async () => {
-    dispatch(getNextReposList({ value: value, page: page }));
+    dispatch(getNextReposList({ value: value, page: page, endCursor }));
   };
 
   return (
@@ -93,7 +99,7 @@ const ReposSearchPage: React.FC = () => {
           {searchIcon}
         </Button>
       </div>
-      {status === 404 && (
+      {result?.data.data.organization === null && (
         <h4 className={style.error}>Вы ввели не существующую организацию</h4>
       )}
       {status === 403 && (
@@ -106,7 +112,7 @@ const ReposSearchPage: React.FC = () => {
           Что-то пошло не так, перезагрузите страницу
         </h4>
       )}
-      {success && (
+      {success && result?.data.data.organization && (
         <InfiniteScroll
           className={style.repositories}
           next={fetchData}
@@ -126,7 +132,7 @@ const ReposSearchPage: React.FC = () => {
                       id: repo.databaseId,
                       title: repo.name,
                       company: repo.owner.login,
-                      counterStar: repo.watchers.totalCount,
+                      counterStar: repo.stargazerCount,
                       lastUpdate:
                         "Updated " +
                         new Date(repo.updatedAt).getDay() +
@@ -144,7 +150,11 @@ const ReposSearchPage: React.FC = () => {
       )}
       {visible && (
         <Link to="/repos">
-          <RepoBranchesDrawer onClose={onClose} visible={visible} />
+          <RepoBranchesDrawer
+            branchesList={branchesList}
+            onClose={onClose}
+            visible={visible}
+          />
         </Link>
       )}
     </>
