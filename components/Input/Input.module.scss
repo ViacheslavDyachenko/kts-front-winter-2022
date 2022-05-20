@@ -1,0 +1,19 @@
+@import "styles/variables.scss";
+
+.input {
+    @include square(295px, 50px);
+    vertical-align: top;
+    border: 1px solid $borderColor;
+    border-radius: 6px;
+    color: $plasesholderColor;
+    text-indent: 12px;
+    &:focus {
+        border: 1px solid $redColor;
+        outline: 0;
+        color: $textColor;
+        &:disabled {
+            background-color: $disabledInputBgc;
+            color: $plasesholderColor;
+        }
+    }
+}
