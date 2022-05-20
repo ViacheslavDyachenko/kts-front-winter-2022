@@ -1,0 +1,59 @@
+@import "styles/variables.scss";
+
+.repositoty {
+    @include square(357px, 104px);
+    border: 1px solid $borderColor;
+    border-radius: 6px;
+    position: relative;
+    &:hover {
+        box-shadow: 0px 2px 6px rgba(182, 182, 182, 0.25);
+        cursor: pointer;
+    }
+    &__information-rep {
+        display: inline-block;
+        height: 60px;
+        position: absolute;
+        top: 50%;
+        left: 100px;
+        transform: translateY(-50%);
+    }
+    &__title {
+        font-weight: bold;
+        font-size: 16px;
+        width: 240px;
+        white-space: nowrap;
+        overflow-x: hidden;
+    }
+    &__company {
+        display: inline-block;
+        margin-top: 4px;
+        color: $plasesholderColor;
+        &:hover {
+            color: $companyHover;
+        }
+    }
+    &__details {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 4px;
+        position: relative;
+        width: 250px;
+    }
+    &__counter-star {
+        margin-left: 17px;
+        color: $plasesholderColor;
+    }
+    &__last-update {
+        height: 16px;
+        width: 200px;
+        margin-left: 20px;
+        
+        color: $plasesholderColor;
+    }
+}
+.link {
+    color: $textColor;
+    &:hover {
+        color: $textColor;
+    }
+}

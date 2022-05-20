@@ -1,58 +1,36 @@
 {
-  "name": "cra",
-  "version": "0.1.0",
-  "private": true,
+  "name": "redux_coding",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/ViacheslavDyachenko/kts-front-winter-2022.git",
+  "author": "Viacheslav Dyachenko <dyachenko.v@future-group.ru>",
+  "license": "MIT",
   "dependencies": {
-    "@reduxjs/toolkit": "^1.8.1",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^12.0.0",
-    "@testing-library/user-event": "^13.2.1",
-    "@types/jest": "^27.0.1",
-    "@types/node": "^16.7.13",
-    "@types/react": "^17.0.20",
-    "@types/react-dom": "^17.0.9",
-    "antd": "^4.18.7",
-    "node-sass": "6.0.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "antd": "^4.20.5",
+    "eslint": "^8.15.0",
+    "next": "^12.1.6",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
     "react-infinite-scroll-component": "^6.1.0",
-    "react-redux": "^8.0.1",
-    "react-router-dom": "^6.2.1",
-    "react-scripts": "5.0.0",
-    "typescript": "^4.4.2",
-    "web-vitals": "^2.1.0"
+    "react-redux": "^8.0.1"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-app-rewired eject",
-    "lint": "eslint './src/**/*.{ts,tsx}'",
-    "lint:fix": "eslint \"./src/**/*.{ts,tsx}\" --fix"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint './**/*.{ts,tsx}'",
+    "lint:fix": "eslint \"./**/*.{ts,tsx}\" --fix"
   },
   "devDependencies": {
-    "eslint-config-prettier": "^8.4.0",
+    "@reduxjs/toolkit": "^1.8.1",
+    "@types/node": "^17.0.35",
+    "@types/react": "^18.0.9",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "prettier": "^2.5.1",
+    "node-sass": "^7.0.1",
+    "prettier": "^2.6.2",
     "react-app-rewire-alias": "^1.1.7",
-    "react-app-rewired": "^2.1.11"
+    "react-app-rewired": "^2.2.1",
+    "typescript": "^4.6.4"
   }
 }
